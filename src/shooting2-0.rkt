@@ -1,0 +1,96 @@
+;;;; 壁の追加
+#lang racket
+(require 2htdp/image)
+(require 2htdp/universe)
+
+;;;; 定数を定義
+
+;; ゲーム画面のサイズ
+(define SCENE-SIZE 400)
+;; ゲーム画面
+(define SCENE (empty-scene SCENE-SIZE SCENE-SIZE "white"))
+;; 自機
+(define ME (triangle 30 "solid" "black"))
+;; 弾
+(define MISSILE (circle 10 "solid" "red"))
+
+;; 壁の横幅
+(define BRICK-WIDTH 100)
+;; 壁の縦の高さ
+(define BRICK-HEIGHT 30)
+;; 壁
+(define BRICK (rectangle BRICK-WIDTH BRICK-HEIGHT "solid" "blue"))
+
+;;;; データの形を定義
+(define (world me-x b mi) (list me-x b mi))
+(define (missile x y) (list x y))
+
+(define (get-me-x w) (first w))
+(define (get-brick w) (second w))
+(define (get-missile w) (third w))
+
+(define (missile-x m) (first m))
+(define (missile-y m) (second m))
+
+;;;; 描画処理
+(define (place-me me-x s)
+  (place-image ME me-x (- SCENE-SIZE
+                          (/ (image-height ME) 2))
+               s))
+
+(define (place-brick b s)
+  (cond [(string? b) s]
+        [else (place-image BRICK b 112 s)]))
+
+(define (place-missile m s)
+  (cond [(string? m) s]
+        [else (place-image MISSILE
+                           (missile-x m) (missile-y m)
+                           s)]))
+
+(define (draw-scene w)
+  (place-me (get-me-x w)
+    (place-brick (get-brick w)
+      (place-missile (get-missile w) SCENE))))
+
+;;;; 世界の状態を更新する処理
+(define (move-missile m)
+  (missile (missile-x m) (- (missile-y m) 8)))
+
+(define (move-brick b)
+  (modulo (+ b 5) SCENE-SIZE))
+
+(define (next w)
+  (world (get-me-x w)
+         (cond [(string? (get-brick w)) "none"]
+               [else (move-brick (get-brick w))])
+         (cond [(string? (get-missile w)) "none"]
+               [(>= (missile-y (get-missile w)) 0)
+                (move-missile (get-missile w))]
+               [else "none"])))
+
+;;;; キーボード入力を処理
+(define (control w k)
+  (cond [(string=? k "left")
+         (world (- (get-me-x w) 5)
+                (get-brick w)
+                (get-missile w))]
+        [(string=? k "right")
+         (world (+ (get-me-x w) 5)
+                (get-brick w)
+                (get-missile w))]
+        [(string=? k " ")
+         (world (get-me-x w)
+                (get-brick w)
+                (cond [(string? (get-missile w))
+                       (missile (get-me-x w)
+                                (- SCENE-SIZE (image-height ME)))]
+                      [else (get-missile w)]))]
+        [else w]))
+
+;;;; アプリケーションの実行を開始
+(define (start me-x)
+  (big-bang (world me-x 200 "none")
+    [to-draw draw-scene]
+    [on-tick next]
+    [on-key control]))
