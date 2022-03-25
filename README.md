@@ -29,8 +29,8 @@
 ## 参考情報
 
 * Schemeの簡単な入門書（日本語訳）
-    - https://www.sampou.org/scheme/t-y-scheme/t-y-scheme.html 
+    - [https://www.sampou.org/scheme/t-y-scheme/t-y-scheme.html](https://www.sampou.org/scheme/t-y-scheme/t-y-scheme.html)
 * Schemeを使った情報科学の入門書（世界的に有名）
-    - https://github.com/hiroshi-manabe/sicp-pdf/blob/japanese/jsicp.pdf 
+    - [https://github.com/hiroshi-manabe/sicp-pdf/blob/japanese/jsicp.pdf](https://github.com/hiroshi-manabe/sicp-pdf/blob/japanese/jsicp.pdf)
 * 教員メールアドレス
-    - umatani@kanagawa-u.ac.jp 
+    - [umatani@kanagawa-u.ac.jp](mailto:umatani@kanagawa-u.ac.jp)
